@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:todolist/app_routes.dart';
 import 'package:todolist/data/model/todo.dart';
 import 'package:todolist/di.dart';
@@ -54,7 +55,7 @@ class TodoListView extends StatelessWidget {
                   child: ListTile(
                     title: Text(todo.title),
                     subtitle: Text(todo.content),
-                    trailing: Text(todo.timestamp.toString()),
+                    trailing: Text(DateFormat('yyyy-MM-dd HH:mm:ss').format(todo.timestamp)),
                   ),
                 );
               },
