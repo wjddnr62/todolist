@@ -50,10 +50,12 @@ class TodoListView extends StatelessWidget {
               itemCount: state.todos.length,
               itemBuilder: (context, index) {
                 final Todo todo = state.todos[index];
-                return ListTile(
-                  title: Text(todo.title),
-                  subtitle: Text(todo.content),
-                  trailing: Text(todo.timestamp.toString()),
+                return RepaintBoundary(
+                  child: ListTile(
+                    title: Text(todo.title),
+                    subtitle: Text(todo.content),
+                    trailing: Text(todo.timestamp.toString()),
+                  ),
                 );
               },
             );

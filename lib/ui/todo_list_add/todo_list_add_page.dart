@@ -118,27 +118,29 @@ class _TodoListAddViewState extends State<TodoListAddView> {
                   },
                 ),
                 const SizedBox(height: 16.0),
-                BlocBuilder<TodoListAddCubit, TodoListAddState>(
-                  builder: (context, state) {
-                    if (state is TodoListAddInitial) {
-                      return Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Text(
-                              DateFormat('yyyy-MM-dd HH:mm')
-                                  .format(state.selectedDate),
+                RepaintBoundary(
+                  child: BlocBuilder<TodoListAddCubit, TodoListAddState>(
+                    builder: (context, state) {
+                      if (state is TodoListAddInitial) {
+                        return Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(
+                                DateFormat('yyyy-MM-dd HH:mm')
+                                    .format(state.selectedDate),
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.calendar_today),
-                            onPressed: () =>
-                                _selectDate(context, state.selectedDate),
-                          ),
-                        ],
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
+                            IconButton(
+                              icon: const Icon(Icons.calendar_today),
+                              onPressed: () =>
+                                  _selectDate(context, state.selectedDate),
+                            ),
+                          ],
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
                 ),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
