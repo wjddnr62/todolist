@@ -2,15 +2,18 @@
 
 나의 개발 주의점을 지키며 개발한 todolist 앱
 
-## Getting Started
+개발 할 시 항상 주의 할 점
+1. 엄격한 lints 룰을 추가
+- flutter lints 활용
+2. fomatter 동일화 
+3.  항상 읽고 이해하기 쉬운 코드로 작성할 것
+4. AI 활용 시 명확한 명령과 제대로 이해한 후 넘길 것
+5. final, const를 최대한 활용하여 위젯 재빌드 최소화
+6. 의존성 주입을 명확하게 할 것
+7. 필요한 로그만 작성하여 디버깅을 쉽게 할 것
+8. 버전관리 준수
+9. readme 최신화
+10. ui코드와 비즈니스 코드를 같이 쓰지 말 것
+11. 테스트 코드를 최대한 작성하여 의도되로 흘러가는지 확인
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+26. 02. 06. 군대에 있는동안 퇴색된 기본기 다지기 위해 새로운 프로젝트 시작
