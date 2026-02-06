@@ -17,3 +17,13 @@
 11. 테스트 코드를 최대한 작성하여 의도되로 흘러가는지 확인
 12. RepaintBoundary 위젯을 활용하여 ui 최적화
 
+= app_routes
+ - 앱 연결 설정 파일
+= di 
+ -  get_it 설정 파일
+= splash
+ - 스플래쉬 화면 구성
+= todo_list
+ -  todo_list 화면 구성과 bloc
+= todo_list_add
+ - todo_list 추가 화면 구성과 bloc
