@@ -12,5 +12,7 @@ void setup() {
 
   // BLoCs and Cubits
   getIt.registerFactory<TodoListBloc>(() => TodoListBloc(getIt<Box<Todo>>()));
-  getIt.registerFactory<TodoListAddCubit>(() => TodoListAddCubit(getIt<Box<Todo>>()));
+  getIt.registerFactory<TodoListAddCubit>(
+    () => TodoListAddCubit(getIt<Box<Todo>>()),
+  );
 }

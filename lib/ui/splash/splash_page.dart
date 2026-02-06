@@ -14,21 +14,18 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 2), () {
-      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.todoList, (route) => false);
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.todoList,
+        (route) => false,
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Icon(
-            Icons.list_alt,
-            size: 100,
-          ),
-        ),
-      ),
+      body: SafeArea(child: Center(child: Icon(Icons.list_alt, size: 100))),
     );
   }
 }

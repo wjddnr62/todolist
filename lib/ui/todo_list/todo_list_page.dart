@@ -42,9 +42,7 @@ class TodoListView extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (state is TodoListLoaded) {
             if (state.todos.isEmpty) {
-              return const Center(
-                child: Text('No todos yet.'),
-              );
+              return const Center(child: Text('No todos yet.'));
             }
             return ListView.builder(
               itemCount: state.todos.length,
