@@ -24,7 +24,7 @@ class TodoListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Todo List'),
+        title: const Text('할 일'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -42,7 +42,9 @@ class TodoListView extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (state is TodoListLoaded) {
             if (state.todos.isEmpty) {
-              return const Center(child: Text('No todos yet.'));
+              return const Center(
+                child: Text('할 일이 아직 없습니다.'),
+              );
             }
             return ListView.builder(
               itemCount: state.todos.length,
@@ -60,7 +62,7 @@ class TodoListView extends StatelessWidget {
           } else if (state is TodoListError) {
             return Center(child: Text(state.message));
           }
-          return const Center(child: Text('Press the button to load todos.'));
+          return const Center(child: Text('할 일을 불러오는 중입니다...'));
         },
       ),
     );

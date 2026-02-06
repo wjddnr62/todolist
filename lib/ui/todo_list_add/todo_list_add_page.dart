@@ -48,25 +48,22 @@ class _TodoListAddViewState extends State<TodoListAddView> {
         initialTime: TimeOfDay.fromDateTime(initialDate),
       );
       if (pickedTime != null) {
-        context.read<TodoListAddCubit>().selectDate(
-          DateTime(
-            pickedDate.year,
-            pickedDate.month,
-            pickedDate.day,
-            pickedTime.hour,
-            pickedTime.minute,
-          ),
-        );
+        context.read<TodoListAddCubit>().selectDate(DateTime(
+              pickedDate.year,
+              pickedDate.month,
+              pickedDate.day,
+              pickedTime.hour,
+              pickedTime.minute,
+            ));
       }
     }
   }
 
   void _addTodo() {
     if (_formKey.currentState!.validate()) {
-      context.read<TodoListAddCubit>().addTodo(
-        _titleController.text,
-        _contentController.text,
-      );
+      context
+          .read<TodoListAddCubit>()
+          .addTodo(_titleController.text, _contentController.text);
     }
   }
 
@@ -78,12 +75,17 @@ class _TodoListAddViewState extends State<TodoListAddView> {
           Navigator.pop(context);
         } else if (state is TodoListAddFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Add Todo')),
+        appBar: AppBar(
+          title: const Text('할 일 추가'),
+        ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
@@ -92,10 +94,12 @@ class _TodoListAddViewState extends State<TodoListAddView> {
               children: <Widget>[
                 TextFormField(
                   controller: _titleController,
-                  decoration: const InputDecoration(labelText: 'Title'),
+                  decoration: const InputDecoration(
+                    labelText: '제목',
+                  ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a title';
+                      return '제목을 입력해주세요';
                     }
                     return null;
                   },
@@ -103,10 +107,12 @@ class _TodoListAddViewState extends State<TodoListAddView> {
                 const SizedBox(height: 16.0),
                 TextFormField(
                   controller: _contentController,
-                  decoration: const InputDecoration(labelText: 'Content'),
+                  decoration: const InputDecoration(
+                    labelText: '내용',
+                  ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter content';
+                      return '내용을 입력해주세요';
                     }
                     return null;
                   },
@@ -120,9 +126,8 @@ class _TodoListAddViewState extends State<TodoListAddView> {
                           children: <Widget>[
                             Expanded(
                               child: Text(
-                                DateFormat(
-                                  'yyyy-MM-dd HH:mm',
-                                ).format(state.selectedDate),
+                                DateFormat('yyyy-MM-dd HH:mm')
+                                    .format(state.selectedDate),
                               ),
                             ),
                             IconButton(
@@ -138,7 +143,10 @@ class _TodoListAddViewState extends State<TodoListAddView> {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-                ElevatedButton(onPressed: _addTodo, child: const Text('Add')),
+                ElevatedButton(
+                  onPressed: _addTodo,
+                  child: const Text('추가'),
+                ),
               ],
             ),
           ),
