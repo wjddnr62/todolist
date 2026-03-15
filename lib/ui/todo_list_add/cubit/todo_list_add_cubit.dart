@@ -9,7 +9,8 @@ part 'todo_list_add_state.dart';
 class TodoListAddCubit extends Cubit<TodoListAddState> {
   final Box<Todo> _todoBox;
 
-  TodoListAddCubit(this._todoBox) : super(TodoListAddInitial(DateTime.now()));
+  TodoListAddCubit(this._todoBox, DateTime initialDate) 
+      : super(TodoListAddInitial(initialDate));
 
   void selectDate(DateTime date) {
     emit(TodoListAddInitial(date));
@@ -18,7 +19,7 @@ class TodoListAddCubit extends Cubit<TodoListAddState> {
   void addTodo(String title, String content) {
     if (state is TodoListAddInitial) {
       try {
-        final currentState = state as TodoListAddInitial;
+        final TodoListAddInitial currentState = state as TodoListAddInitial;
         _todoBox.add(
           Todo(
             title: title,

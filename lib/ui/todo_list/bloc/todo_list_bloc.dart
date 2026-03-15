@@ -14,11 +14,37 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     on<LoadTodos>((event, emit) async {
       emit(TodoListLoading());
       try {
-        final List<Todo> todos = _todoBox.values.toList();
-        emit(TodoListLoaded(todos));
+        final List<Todo> todos = _getFilteredTodos(event.date);
+        emit(TodoListLoaded(todos: todos, selectedDate: event.date));
       } catch (e) {
         emit(TodoListError(e.toString()));
       }
     });
+
+    on<ChangeDate>((event, emit) async {
+      emit(TodoListLoading());
+      try {
+        final List<Todo> todos = _getFilteredTodos(event.date);
+        emit(TodoListLoaded(todos: todos, selectedDate: event.date));
+      } catch (e) {
+        emit(TodoListError(e.toString()));
+      }
+    });
+
+    on<UpdateViewedDate>((event, emit) {
+      if (state is TodoListLoaded) {
+        final currentState = state as TodoListLoaded;
+        // 목록은 유지하고 날짜만 업데이트하여 AppBar 갱신
+        emit(TodoListLoaded(todos: currentState.todos, selectedDate: event.date));
+      }
+    });
+  }
+
+  List<Todo> _getFilteredTodos(DateTime date) {
+    return _todoBox.values.where((todo) {
+      return todo.timestamp.year == date.year &&
+          todo.timestamp.month == date.month &&
+          todo.timestamp.day == date.day;
+    }).toList();
   }
 }

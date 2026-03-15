@@ -12,7 +12,9 @@ void setup() {
 
   // BLoCs and Cubits
   getIt.registerFactory<TodoListBloc>(() => TodoListBloc(getIt<Box<Todo>>()));
-  getIt.registerFactory<TodoListAddCubit>(
-    () => TodoListAddCubit(getIt<Box<Todo>>()),
+  
+  // DateTime 파라미터를 받아 Cubit 생성
+  getIt.registerFactoryParam<TodoListAddCubit, DateTime, void>(
+    (initialDate, _) => TodoListAddCubit(getIt<Box<Todo>>(), initialDate),
   );
 }

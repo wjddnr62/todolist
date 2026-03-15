@@ -14,11 +14,15 @@ class TodoListLoading extends TodoListState {}
 
 class TodoListLoaded extends TodoListState {
   final List<Todo> todos;
+  final DateTime selectedDate;
 
-  const TodoListLoaded(this.todos);
+  const TodoListLoaded({
+    required this.todos,
+    required this.selectedDate,
+  });
 
   @override
-  List<Object> get props => [todos];
+  List<Object> get props => [todos, selectedDate];
 }
 
 class TodoListError extends TodoListState {
