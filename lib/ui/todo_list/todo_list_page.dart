@@ -12,8 +12,8 @@ class TodoListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<TodoListBloc>()..add(LoadTodos(DateTime.now())),
+    return BlocProvider<TodoListBloc>(
+      create: (BuildContext context) => getIt<TodoListBloc>()..add(LoadTodos(DateTime.now())),
       child: const TodoListView(),
     );
   }
@@ -42,20 +42,18 @@ class _TodoListViewState extends State<TodoListView> {
     final DateTime now = DateTime.now();
     _dates = List.generate(
       61,
-      (index) => DateTime(now.year, now.month, now.day)
+      (int index) => DateTime(now.year, now.month, now.day)
           .subtract(const Duration(days: 30))
           .add(Duration(days: index)),
     );
 
     _scrollController.addListener(_onTopScroll);
 
-    if (mounted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scrollController.hasClients) {
-          _scrollController.jumpTo(_currentIndex * _itemWidth);
-        }
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(_currentIndex * _itemWidth);
+      }
+    });
   }
 
   @override
@@ -66,17 +64,14 @@ class _TodoListViewState extends State<TodoListView> {
     super.dispose();
   }
 
-  // 상단 날짜바 스크롤 시 호출
   void _onTopScroll() {
     if (!_scrollController.hasClients) return;
     
-    // 사용자가 직접 스크롤 할 때만 동작 (피드백 루프 방지)
     if (_scrollController.position.userScrollDirection != ScrollDirection.idle) {
       final int index = (_scrollController.offset / _itemWidth).round();
       if (index >= 0 && index < _dates.length && index != _currentIndex) {
         _currentIndex = index;
         
-        // 유저가 스크롤 중일 때는 jump로 즉시 동기화하여 지연을 줄임
         if (_pageController.hasClients) {
           _pageController.jumpToPage(index);
         }
@@ -85,17 +80,14 @@ class _TodoListViewState extends State<TodoListView> {
     }
   }
 
-  // 하단 PageView 스와이프 시 호출
   void _onPageChanged(int index) {
-    // PageView 애니메이션이나 드래그로 인해 인덱스가 변경될 때만 동작
     if (index != _currentIndex) {
       _currentIndex = index;
       
-      // 상단 날짜바 동기화 (부드러운 이동)
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           index * _itemWidth,
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 150),
           curve: Curves.easeInOut,
         );
       }
@@ -106,7 +98,7 @@ class _TodoListViewState extends State<TodoListView> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TodoListBloc, TodoListState>(
-      builder: (context, state) {
+      builder: (BuildContext context, TodoListState state) {
         String month = '';
         String year = '';
         DateTime selectedDate = DateTime.now();
@@ -135,7 +127,7 @@ class _TodoListViewState extends State<TodoListView> {
               year,
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            actions: [
+            actions: <Widget>[
               IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () {
@@ -153,15 +145,15 @@ class _TodoListViewState extends State<TodoListView> {
             ],
           ),
           body: Column(
-            children: [
-              _buildDateSection(selectedDate),
+            children: <Widget>[
+              _buildDateSection(state, selectedDate),
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
                   onPageChanged: _onPageChanged,
                   physics: const BouncingScrollPhysics(),
                   itemCount: _dates.length,
-                  itemBuilder: (context, index) {
+                  itemBuilder: (BuildContext context, int index) {
                     return _buildTodoList(state, index);
                   },
                 ),
@@ -173,9 +165,14 @@ class _TodoListViewState extends State<TodoListView> {
     );
   }
 
-  Widget _buildDateSection(DateTime selectedDate) {
+  Widget _buildDateSection(TodoListState state, DateTime selectedDate) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double sidePadding = (screenWidth / 2) - (_itemWidth / 2);
+
+    Set<DateTime> datesWithTodos = <DateTime>{};
+    if (state is TodoListLoaded) {
+      datesWithTodos = state.datesWithTodos;
+    }
 
     return Container(
       height: 90,
@@ -186,45 +183,64 @@ class _TodoListViewState extends State<TodoListView> {
         padding: EdgeInsets.symmetric(horizontal: sidePadding),
         physics: const BouncingScrollPhysics(),
         itemCount: _dates.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (BuildContext context, int index) {
           final DateTime date = _dates[index];
           final bool isSelected = date.year == selectedDate.year &&
               date.month == selectedDate.month &&
               date.day == selectedDate.day;
+          
+          final bool hasTodos = datesWithTodos.contains(DateTime(date.year, date.month, date.day));
 
           return RepaintBoundary(
             child: GestureDetector(
               onTap: () {
-                _scrollController.animateTo(
-                  index * _itemWidth,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
+                if (index != _currentIndex) {
+                  if (_pageController.hasClients) {
+                    _pageController.animateToPage(
+                      index,
+                      duration: const Duration(milliseconds: 150),
+                      curve: Curves.easeInOut,
+                    );
+                  }
+                }
               },
               child: Container(
                 width: 60,
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
-                  color: isSelected ? Colors.blueAccent : Colors.transparent,
+                  color: isSelected ? Colors.purple[100] : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                  children: <Widget>[
                     Text(
                       DateFormat('E', 'ko_KR').format(date),
                       style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey,
+                        color: isSelected ? Colors.purple[900] : Colors.grey,
                         fontSize: 12,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       date.day.toString(),
                       style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black,
+                        color: isSelected ? Colors.purple[900] : Colors.black,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    // 점 UI를 항상 유지하여 정렬을 일정하게 맞춤
+                    Container(
+                      margin: const EdgeInsets.only(top: 4),
+                      width: 4,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: hasTodos 
+                          ? (isSelected ? Colors.purple[900] : Colors.purpleAccent)
+                          : Colors.transparent,
+                        shape: BoxShape.circle,
                       ),
                     ),
                   ],
@@ -245,7 +261,6 @@ class _TodoListViewState extends State<TodoListView> {
           _dates[pageIndex].month == state.selectedDate.month &&
           _dates[pageIndex].day == state.selectedDate.day;
 
-      // 스와이프 도중 다른 페이지는 빈 화면이나 스피너를 보여주어 성능 확보
       if (!isCurrentPage) {
         return const SizedBox.shrink();
       }
@@ -264,6 +279,10 @@ class _TodoListViewState extends State<TodoListView> {
                 }
               });
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.purple[50],
+              foregroundColor: Colors.purple[900],
+            ),
             child: const Text('일정을 등록해보세요!'),
           ),
         );
@@ -271,7 +290,7 @@ class _TodoListViewState extends State<TodoListView> {
       return ListView.builder(
         padding: const EdgeInsets.only(top: 8),
         itemCount: state.todos.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (BuildContext context, int index) {
           final Todo todo = state.todos[index];
           return RepaintBoundary(
             child: ListTile(

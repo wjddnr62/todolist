@@ -15,17 +15,27 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
       emit(TodoListLoading());
       try {
         final List<Todo> todos = _getFilteredTodos(event.date);
-        emit(TodoListLoaded(todos: todos, selectedDate: event.date));
+        final Set<DateTime> datesWithTodos = _getDatesWithTodos();
+        emit(TodoListLoaded(
+          todos: todos, 
+          selectedDate: event.date,
+          datesWithTodos: datesWithTodos,
+        ));
       } catch (e) {
         emit(TodoListError(e.toString()));
       }
     });
 
     on<ChangeDate>((event, emit) async {
-      emit(TodoListLoading());
+      // 여기서는 로딩을 보여주지 않고 즉시 업데이트하여 부드러운 전환 제공 가능 (선택 사항)
       try {
         final List<Todo> todos = _getFilteredTodos(event.date);
-        emit(TodoListLoaded(todos: todos, selectedDate: event.date));
+        final Set<DateTime> datesWithTodos = _getDatesWithTodos();
+        emit(TodoListLoaded(
+          todos: todos, 
+          selectedDate: event.date,
+          datesWithTodos: datesWithTodos,
+        ));
       } catch (e) {
         emit(TodoListError(e.toString()));
       }
@@ -34,8 +44,11 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     on<UpdateViewedDate>((event, emit) {
       if (state is TodoListLoaded) {
         final currentState = state as TodoListLoaded;
-        // 목록은 유지하고 날짜만 업데이트하여 AppBar 갱신
-        emit(TodoListLoaded(todos: currentState.todos, selectedDate: event.date));
+        emit(TodoListLoaded(
+          todos: currentState.todos, 
+          selectedDate: event.date,
+          datesWithTodos: currentState.datesWithTodos,
+        ));
       }
     });
   }
@@ -46,5 +59,11 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
           todo.timestamp.month == date.month &&
           todo.timestamp.day == date.day;
     }).toList();
+  }
+
+  Set<DateTime> _getDatesWithTodos() {
+    return _todoBox.values.map((todo) {
+      return DateTime(todo.timestamp.year, todo.timestamp.month, todo.timestamp.day);
+    }).toSet();
   }
 }
