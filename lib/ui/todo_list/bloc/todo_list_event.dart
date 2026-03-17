@@ -31,3 +31,20 @@ class UpdateViewedDate extends TodoListEvent {
   @override
   List<Object> get props => [date];
 }
+
+class UpdateGoal extends TodoListEvent {
+  final String goal;
+  const UpdateGoal(this.goal);
+
+  @override
+  List<Object> get props => [goal];
+}
+
+class AchieveGoal extends TodoListEvent {
+  final String goal;
+  final DateTime date;
+  const AchieveGoal(this.goal, this.date);
+
+  @override
+  List<Object> get props => [goal, date];
+}

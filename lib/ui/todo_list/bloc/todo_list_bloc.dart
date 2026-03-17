@@ -9,17 +9,22 @@ part 'todo_list_state.dart';
 
 class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   final Box<Todo> _todoBox;
+  final Box _settingsBox;
+  final Box _achievedBox;
 
-  TodoListBloc(this._todoBox) : super(TodoListInitial()) {
+  TodoListBloc(this._todoBox, this._settingsBox, this._achievedBox) : super(TodoListInitial()) {
     on<LoadTodos>((event, emit) async {
       emit(TodoListLoading());
       try {
         final List<Todo> todos = _getFilteredTodos(event.date);
         final Set<DateTime> datesWithTodos = _getDatesWithTodos();
+        final String goal = _settingsBox.get('goal', defaultValue: '') as String;
+        
         emit(TodoListLoaded(
           todos: todos, 
           selectedDate: event.date,
           datesWithTodos: datesWithTodos,
+          goal: goal,
         ));
       } catch (e) {
         emit(TodoListError(e.toString()));
@@ -27,14 +32,16 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     });
 
     on<ChangeDate>((event, emit) async {
-      // 여기서는 로딩을 보여주지 않고 즉시 업데이트하여 부드러운 전환 제공 가능 (선택 사항)
       try {
         final List<Todo> todos = _getFilteredTodos(event.date);
         final Set<DateTime> datesWithTodos = _getDatesWithTodos();
+        final String goal = _settingsBox.get('goal', defaultValue: '') as String;
+        
         emit(TodoListLoaded(
           todos: todos, 
           selectedDate: event.date,
           datesWithTodos: datesWithTodos,
+          goal: goal,
         ));
       } catch (e) {
         emit(TodoListError(e.toString()));
@@ -48,6 +55,45 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
           todos: currentState.todos, 
           selectedDate: event.date,
           datesWithTodos: currentState.datesWithTodos,
+          goal: currentState.goal,
+        ));
+      }
+    });
+
+    on<UpdateGoal>((event, emit) async {
+      await _settingsBox.put('goal', event.goal);
+      if (state is TodoListLoaded) {
+        final currentState = state as TodoListLoaded;
+        emit(TodoListLoaded(
+          todos: currentState.todos,
+          selectedDate: currentState.selectedDate,
+          datesWithTodos: currentState.datesWithTodos,
+          goal: event.goal,
+        ));
+      }
+    });
+
+    on<AchieveGoal>((event, emit) async {
+      if (state is TodoListLoaded) {
+        final currentState = state as TodoListLoaded;
+        
+        // 1. 달성 기록 저장
+        final String timestamp = DateTime.now().toIso8601String();
+        await _achievedBox.add({
+          'goal': event.goal,
+          'date': event.date.toIso8601String(),
+          'achievedAt': timestamp,
+        });
+
+        // 2. 목표 초기화 (설정 전 상태로)
+        await _settingsBox.delete('goal');
+        
+        // 3. 상태 업데이트
+        emit(TodoListLoaded(
+          todos: currentState.todos,
+          selectedDate: currentState.selectedDate,
+          datesWithTodos: currentState.datesWithTodos,
+          goal: '', // 빈 문자열로 초기화
         ));
       }
     });

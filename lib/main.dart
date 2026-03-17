@@ -15,6 +15,8 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(TodoAdapter());
   await Hive.openBox<Todo>('todos');
+  await Hive.openBox('settings'); // 목표 저장을 위한 박스
+  await Hive.openBox('achieved_goals'); // 달성 기록 저장을 위한 박스 추가
 
   setup();
 
@@ -31,9 +33,9 @@ class TodoListApp extends StatelessWidget {
       initialRoute: AppRoutes.splash,
       routes: AppRoutes.routes,
       // 한국어 로케일 설정
-      locale: const Locale('ko', 'KR'),
+      locale: Locale('ko', 'KR'),
       supportedLocales: <Locale>[
-        const Locale('ko', 'KR'),
+        Locale('ko', 'KR'),
       ],
       localizationsDelegates: <LocalizationsDelegate<dynamic>>[
         GlobalMaterialLocalizations.delegate,

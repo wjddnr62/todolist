@@ -15,16 +15,18 @@ class TodoListLoading extends TodoListState {}
 class TodoListLoaded extends TodoListState {
   final List<Todo> todos;
   final DateTime selectedDate;
-  final Set<DateTime> datesWithTodos; // 일정이 있는 날짜 집합
+  final Set<DateTime> datesWithTodos;
+  final String goal;
 
   const TodoListLoaded({
     required this.todos,
     required this.selectedDate,
     required this.datesWithTodos,
+    required this.goal,
   });
 
   @override
-  List<Object> get props => [todos, selectedDate, datesWithTodos];
+  List<Object> get props => [todos, selectedDate, datesWithTodos, goal];
 }
 
 class TodoListError extends TodoListState {
